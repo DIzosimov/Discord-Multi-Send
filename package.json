@@ -1,0 +1,19 @@
+{
+  "name": "discord-multicast-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A role-restricted Discord bot that broadcasts scheduled messages to saved channels.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.2.3",
+    "node-cron": "^4.6.0"
+  }
+}
