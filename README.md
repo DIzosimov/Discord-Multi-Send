@@ -43,6 +43,7 @@ Fill in `.env` before starting:
 - `DISCORD_GUILD_ID`: your Discord server ID. Enable Discord Developer Mode and right-click the server to copy it.
 - `DATA_FILE`: location of the persistent configuration file.
 - `ALLOW_MENTIONS`: keep `false` unless the bot should produce real pings.
+- `SILENT_BROADCASTS`: defaults to `true`, preventing broadcast copies from producing push or desktop notifications. Set it to `false` to restore notifications.
 
 The bot registers its guild slash commands on startup. Guild commands normally appear immediately.
 
@@ -121,6 +122,7 @@ The mounted `data` directory keeps the configuration across container replacemen
 - Never paste the bot token into Discord or commit `.env`.
 - If the token is exposed, reset it immediately in the Developer Portal.
 - Keep `ALLOW_MENTIONS=false` unless role or mass mentions are intentional.
+- Keep `SILENT_BROADCASTS=true` to show broadcasts without triggering notification sounds.
 - Give the bot only View Channel and Send Messages access in channels it should use.
 - This project targets one Discord server. Its commands are registered only to `DISCORD_GUILD_ID`.
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { ChannelType } from "discord.js";
+import { ChannelType, MessageFlags } from "discord.js";
 import { MulticastBot } from "../src/bot.js";
 
 test("channel add fetches a full guild channel before checking permissions", async () => {
@@ -140,6 +140,47 @@ test("broadcast dynamically includes category children and removes duplicates", 
   assert.deepEqual(new Set(result.sent), new Set([manual.id, categoryChild.id, announcementChild.id]));
   assert.equal(delivered.length, 3);
   assert.ok(delivered.every(({ payload }) => payload.allowedMentions.parse.length === 0));
+  assert.ok(
+    delivered.every(({ payload }) => payload.flags === MessageFlags.SuppressNotifications)
+  );
+});
+
+test("broadcast notifications can be explicitly enabled", async () => {
+  let deliveredPayload;
+  const channel = {
+    id: "111111111111111",
+    type: ChannelType.GuildText,
+    parentId: null,
+    isTextBased: () => true,
+    permissionsFor: () => ({ has: () => true }),
+    send: async (payload) => {
+      deliveredPayload = payload;
+    }
+  };
+  const channels = new Map([[channel.id, channel]]);
+  const guild = {
+    channels: { fetch: async (id) => (id ? channels.get(id) : channels) },
+    members: { me: { id: "999999999999999" } }
+  };
+  const store = {
+    get: () => ({
+      channelIds: [channel.id],
+      categoryIds: [],
+      allowedRoleIds: [],
+      schedule: { enabled: false, cron: "0 9 * * *", timezone: "UTC", message: "Hello" }
+    })
+  };
+  const client = { guilds: { cache: new Map([["888888888888888", guild]]) } };
+  const bot = new MulticastBot({
+    client,
+    guildId: "888888888888888",
+    store,
+    silentBroadcasts: false
+  });
+
+  await bot.broadcast("Hello");
+
+  assert.equal(deliveredPayload.flags, undefined);
 });
 
 test("broadcast skips channels where the bot lacks access", async () => {

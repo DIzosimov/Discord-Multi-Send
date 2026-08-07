@@ -34,11 +34,18 @@ function formatList(values, formatter, fallback) {
 }
 
 export class MulticastBot {
-  constructor({ client, guildId, store, allowMentions = false }) {
+  constructor({
+    client,
+    guildId,
+    store,
+    allowMentions = false,
+    silentBroadcasts = true
+  }) {
     this.client = client;
     this.guildId = guildId;
     this.store = store;
     this.allowMentions = allowMentions;
+    this.silentBroadcasts = silentBroadcasts;
     this.task = null;
   }
 
@@ -139,6 +146,9 @@ export class MulticastBot {
 
         await channel.send({
           content: message,
+          ...(this.silentBroadcasts
+            ? { flags: MessageFlags.SuppressNotifications }
+            : {}),
           allowedMentions: this.allowMentions
             ? { parse: ["users", "roles", "everyone"] }
             : { parse: [] }

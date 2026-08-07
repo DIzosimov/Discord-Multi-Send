@@ -22,6 +22,7 @@ const clientId = process.env.DISCORD_CLIENT_ID;
 const guildId = process.env.DISCORD_GUILD_ID;
 const dataFile = process.env.DATA_FILE ?? "./data/config.json";
 const allowMentions = process.env.ALLOW_MENTIONS?.toLowerCase() === "true";
+const silentBroadcasts = process.env.SILENT_BROADCASTS?.toLowerCase() !== "false";
 
 const store = new ConfigStore(dataFile);
 await store.load();
@@ -31,7 +32,13 @@ await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: comma
 console.log(`Registered ${commandData.length} guild slash commands.`);
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const multicastBot = new MulticastBot({ client, guildId, store, allowMentions });
+const multicastBot = new MulticastBot({
+  client,
+  guildId,
+  store,
+  allowMentions,
+  silentBroadcasts
+});
 
 client.once(Events.ClientReady, async (readyClient) => {
   console.log(`Logged in as ${readyClient.user.tag}.`);
